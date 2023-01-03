@@ -23,15 +23,19 @@ namespace VueCoreWebapiBackend.Helpers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Issuer = issuer,
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, userName),
+                    new Claim(ClaimTypes.Role, "Admin"),
+                    new Claim(ClaimTypes.Role, "User"),
+                    new Claim("carId", "horse"),
+                }),
+                Expires = DateTime.Now.AddMinutes(Convert.ToInt32(expireMinutes)),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey)),
                     SecurityAlgorithms.HmacSha256Signature
                 ),
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, userName),
-                }),
-                Expires = DateTime.Now.AddMinutes(Convert.ToInt32(expireMinutes)),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
